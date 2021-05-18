@@ -1,13 +1,13 @@
 ﻿export const environment = {
-    production: false,
+    production: true,
     poolsAddressesURL: 'https://raw.githubusercontent.com/tosdis/TosDisFinance/main/pools.json',
     eth: {
-        stakeMasterAddress: '0xe86Ce9867a183d22b33045883343D33eBF1f3618', //kovan address
+        stakeMasterAddress: '0xC9F1808F45B53Bf4FC399C4c3ad4Ea2523669f10',
         UniswapV2Factory: '0x5c69bee701ef814a2b6a3edd4b1652cb9cc5aa6f',
         UniswapV2Router02: '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D',
         WETHAddress: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
         explorerURL: 'https://etherscan.io/tx/',
-        idoMasterAddress: '0x576C3Dbdc6B37fb0D115128FBAFc06B789F5472a', // 0x576C3Dbdc6B37fb0D115128FBAFc06B789F5472a Testnet kovan
+        idoMasterAddress: '',
 
         stakeStartBlock: '12173216',
         idoStartBlock: '12173216',
