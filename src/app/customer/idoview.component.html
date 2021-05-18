@@ -1,0 +1,50 @@
+﻿<div class="staking-pool clearfix">
+    <div class="ribbon" *ngIf="isFinished"><span>Finished</span></div>
+    <div class="st-pool-inner">
+        <div class="stake-title">
+            <img [src]="imagePath" height="60" />
+            <h3>{{pool.rewardSymbol}} IDO</h3>
+        </div>
+        <div class="pool-earning">
+            <h2>{{maxDistributedTokenAmount*tokenPrice | number: '1.0-2'}} {{chainSymbol}}</h2>
+            <h4>Total Raise</h4>
+        </div>
+        <div style="clear:both"></div>
+        <div class="yield-box clone">
+            <table>
+                <tr>
+                    <th>Token price</th>
+                    <td>{{tokenPrice| number: '1.0-8'}}  {{chainSymbol}}</td>
+                </tr>
+                <tr>
+                    <th>Start</th>
+                    <td>{{startTimestamp* 1000 | date:'dd MMM, yyyy H:mm a'}}</td>
+                </tr>
+                <tr>
+                    <th>Finish</th>
+                    <td>{{finishTimestamp* 1000 | date:'dd MMM, yyyy H:mm a'}}</td>
+                </tr>
+            </table>
+            <div></div>
+        </div>
+        <div class="progress-system">
+            <h5>Progress</h5>
+            <div class="token-claimed">
+                <span [style.width.%]="getDistributedPercent"></span>
+            </div>
+            <div class="claim-detail clearfix">
+                <h4>{{getDistributedPercent| number: '1.0-2'}}%</h4>
+                <h6>{{tokensForDistribution| number: '1.0-2'}}/{{maxDistributedTokenAmount | number: '1.0-2'}}</h6>
+            </div>
+        </div>
+        <div class="approve-btn">
+            <button class="btn btn-blue full" (click)="toIdoPage()">
+                {{'View' | translate}}
+            </button>
+        </div>
+        <div class="text-center" style="clear:both">
+            <span class="status verified" *ngIf="verified">Verified</span>
+            <span class="status unverified" *ngIf="!verified">unverified</span>
+        </div>
+    </div>
+</div>

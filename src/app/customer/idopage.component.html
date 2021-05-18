@@ -1,0 +1,563 @@
+﻿﻿<header-strip></header-strip>
+
+<main>
+    <div class="main-title clearfix">
+        <h1 class="with-logo"><span><img [src]="imagePath" height="40" /></span>{{rewardSymbol}}</h1>
+        <p> <!--??? NAME ???--></p>
+    </div>
+    <div class="ido-details">
+        <div class="row">
+            <div class="col-lg-5">
+                <div class="ido-box">
+                    <div class="ribbon">
+                        <span *ngIf="isUpcoming">Upcoming</span>
+                        <span *ngIf="isStarted">Started</span>
+                        <span *ngIf="isFinished">Finished</span>
+                    </div>
+                    <div class="ido-amount">
+                        <h4>{{rewardSymbol}} Tokens</h4>
+                        <h3>{{maxDistributedTokenAmount | number: '1.0-2'}} {{rewardSymbol}} <span>(≈{{maxDistributedTokenAmount*tokenPrice | number: '1.0-2'}} {{chainSymbol}})</span></h3>
+                        <h5>1 {{rewardSymbol}} = {{tokenPrice | number: '1.0-8'}} {{chainSymbol}}</h5>
+                    </div>
+                    <div class="starts-in" *ngIf="isUpcoming || isStarted">
+                        <h4 *ngIf="isUpcoming">Starts in</h4>
+                        <h4 *ngIf="isStarted">Time left</h4>
+                        <div id="demo">
+                            <div><span>{{timerViewDays}}</span><b>Days</b></div>
+                            <div><span>{{timerViewHours}}</span><b>Hours</b></div>
+                            <div><span>{{timerViewMin}}</span><b>Min</b></div>
+                            <div><span>{{timerViewSec}}</span><b>Sec</b></div>
+                        </div>
+                    </div>
+                    <div class="progress-system no-margin">
+                        <h5>Progress</h5>
+                        <div class="token-claimed">
+                            <span [style.width.%]="getDistributedPercent"></span>
+                        </div>
+                        <div class="claim-detail clearfix">
+                            <h4>{{getDistributedPercent| number: '1.0-2'}}%</h4>
+                            <h6>{{tokensForDistribution| number: '1.0-2'}}/{{maxDistributedTokenAmount | number: '1.0-2'}}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="ido-description">
+                    <h3><!--About the Project--></h3>
+                    <div class="short-description">
+                        <!--<p>??? DESCRIPTION ???</p>-->
+                    </div>
+                    <div class="contract-address">
+                        <i class="cf cf-eth"></i>
+                        <span>{{rewardTokenAddress}}</span>
+                        <a href="https://etherscan.io/token/{{rewardTokenAddress}}" target="_blank" *ngIf="isETHChain">View Etherscan</a>
+                        <a href="https://bscscan.com/token/{{rewardTokenAddress}}" target="_blank" *ngIf="isBNBChain">View BscScan</a>
+                    </div>
+                    <ul class="token-information clearfix">
+                        <li><span>Total Supply:</span> {{totalSupply| number: '1.0-2'}}</li>
+                        <!--<li><span>Holders:</span> ?????</li>
+                        <li><span>Transfers:</span> ?????</li>-->
+                    </ul>
+                    <div class="ido-des-bottom clearfix">
+                        <!--<a href="#?????" class="btn btn-blue">Join Pool</a>-->
+                    </div>
+                    <!--<ul class="ido-des-additional">
+                        <li><a href="#?????" data-toggle="tooltip" data-placement="top" title="Website" target="_blank"><i class="fas fa-globe"></i></a></li>
+                        <li><a href="#?????" data-toggle="tooltip" data-placement="top" title="Whitepaper" target="_blank"><i class="far fa-file-pdf"></i></a></li>
+                        <li><a href="#?????" data-toggle="tooltip" data-placement="top" title="Twitter" target="_blank"><i class="fab fa-twitter"></i></a></li>
+                    </ul>-->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="alert alert-info text-center" style="margin: 30px 0;" *ngIf="now > finishTimestamp && now < startClaimTimestamp">
+        Tokens will be claimable on {{startClaimTimestamp* 1000 | date:'dd MMM, yyyy H:mm a'}}.
+    </div>
+
+    <div class="alert alert-danger text-center" style="margin: 30px 0;" *ngIf="hasWhitelisting && !isWhitelisted">
+        You are not in whitelist
+    </div>
+
+
+    <div *ngIf="now<finishTimestamp" class="col-lg-6" style="margin: 0 auto;">
+        <!--<form #payForm="ngForm" (ngSubmit)="toStep2()">-->
+        <div class="create-box mt-30">
+            <ul class="form-list">
+                <li>
+                    From Balance {{ethBalance | number: '1.2-2'}} {{chainSymbol}}
+                    <input type="number" [(ngModel)]="buyAmountETH" (ngModelChange)="calculateDis()" name="buyAmountETH" class="form-control" required />
+
+                    <div class="text-danger" style="font-weight:bold" *ngIf="buyAmountETH && buyAmountETH < minEthPayment">
+                        Min payment: {{minEthPayment | number: '1.0-8'}} {{chainSymbol}}
+                    </div>
+                    <div class="text-danger" style="font-weight:bold" *ngIf="buyAmountETH && buyAmountETH + totalInvestedETH> userMaxEthPayment">
+                        Max payment: {{userMaxEthPayment - totalInvestedETH | number: '1.0-8'}} {{chainSymbol}}
+                    </div>
+                </li>
+                <li>
+                    Receive {{rewardSymbol}}
+                    <input type="number" [(ngModel)]="buyAmountDIS" (ngModelChange)="calculateETH()" name="buyAmountDIS" class="form-control" required />
+                </li>
+            </ul>
+        </div>
+        <div class="approve-pool text-center">
+            <button class="btn btn-blue full" *ngIf="account"
+                    (click)="payClick()"
+                    [ngClass]="{'wait': waitingTimerId[0]}"
+                    [disabled]="!buyAmountETH || waitingTimerId[0] || buyAmountETH > userMaxEthPayment || buyAmountETH < minEthPayment || !allowPay || hasWhitelisting && !isWhitelisted">
+                {{'Pay'|translate}}
+            </button>
+
+            <!--<p>Create pool</p>-->
+            <!--<button class="btn btn-blue" type="submit" [ngClass]="{'wait': waiting}" [disabled]="!#payForm.form.valid || waiting">Pay</button>-->
+        </div>
+        <!--</form>-->
+
+    </div>
+
+    <div *ngIf="isFinished" class="col-lg-6" style="margin: 0 auto;">
+        <div class="create-box mt-30">
+            <table class="pool-table" style="margin-bottom: 20px">
+                <tr *ngIf="tokenDebt">
+                    <th>Amount for claim</th>
+                    <td>{{tokenDebt | number: '1.0-4'}} {{rewardSymbol}} </td>
+                </tr>
+                <tr *ngIf="tokenDebt&&vestingPercent">
+                    <th>Vesting amount</th>
+                    <td>{{tokenDebt*vestingPercent/100| number: '1.0-4' }}</td>
+                </tr>
+                <tr *ngIf="tokenDebt&&vestingPercent">
+                    <th>Receive amount</th>
+                    <td>{{tokenDebt*(100-vestingPercent)/100| number: '1.0-4' }}</td>
+                </tr>
+                <tr *ngIf="tokenDebt && account">
+                    <td colspan="2">
+                        <button class="btn btn-blue full" style="margin-top: 20px"
+                                (click)="claimClick()"
+                                [ngClass]="{'wait': waitingTimerId[1]}"
+                                [disabled]="waitingTimerId[1] || !allowClaim">
+                            {{'Claim your purchased tokens'|translate}}
+                        </button>
+                    </td>
+                </tr>
+                <tr *ngIf="myClaimedTokensAmount">
+                    <th>Claimed Amount</th>
+                    <td>{{myClaimedTokensAmount | number: '1.0-4'}} {{rewardSymbol}}</td>
+                </tr>
+
+                <tr *ngIf="vestingPercent">
+                    <!--*ngIf="vestedAmount">-->
+                    <th>Vested amount</th>
+                    <td>{{vestedAmount | number: '1.0-4'}} {{rewardSymbol}}</td>
+                </tr>
+
+                <tr *ngIf="vestingPercent">
+                    <!--*ngIf="releasableAmount">-->
+                    <th>Releasable amount</th>
+                    <td>{{releasableAmount | number: '1.0-4'}} {{rewardSymbol}}</td>
+                </tr>
+
+
+                <tr *ngIf="vestingPercent">
+                    <!--*ngIf="vestedReleasedAmount">-->
+                    <th>Vested released amount</th>
+                    <td>{{vestedReleasedAmount | number: '1.0-4'}} {{rewardSymbol}}</td>
+                </tr>
+                <tr *ngIf="releasableAmount">
+                    <td colspan="2">
+                        <button class="btn btn-blue full" style="margin-top: 20px"
+                                (click)="claimVesingClick()"
+                                [ngClass]="{'wait': waitingTimerId[1]}"
+                                [disabled]="waitingTimerId[1] || !allowClaim">
+                            {{'Claim your vesting tokens'|translate}}
+                        </button>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <div class="additional-info">
+        <div class="additional-tabs tabs">
+            <ul class="tab-links clearfix">
+                <li class="active"><a href="#poolInfoTab">Pool Information</a></li>
+                <li class=""><a href="#yourAllocationTab">Your Allocation</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="poolInfoTab" class="tab active">
+                    <table class="pool-table">
+                        <tr>
+                            <th>Token Distribution</th>
+                            <td>{{startClaimTimestamp* 1000 | date:'dd MMM, yyyy H:mm a'}}</td>
+                        </tr>
+                        <tr>
+                            <th>Min. Allocation</th>
+                            <td> {{minEthPayment | number: '1.0-8'}} ETH</td>
+                        </tr>
+                        <tr>
+                            <th>Max. Allocation</th>
+                            <td>{{maxEthPayment | number: '1.0-8'}} {{chainSymbol}}</td>
+                        </tr>
+                        <tr>
+                            <th>Your Max. Allocation</th>
+                            <td>{{userMaxEthPayment | number: '1.0-8'}} {{chainSymbol}}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Vesting percent</th>
+                            <td> {{vestingPercent}}%</td>
+                        </tr>
+
+                        <tr>
+                            <th>Vesting start</th>
+                            <td> {{vestingStart* 1000 | date:'dd MMM, yyyy H:mm a'}} (Timestamp: {{vestingStart}})</td>
+                        </tr>
+
+                        <tr>
+                            <th>Vesting interval</th>
+                            <td> {{vestingInterval | showPeriod}} </td>
+                        </tr>
+                        <tr>
+                            <th>Vesting duration</th>
+                            <td> {{vestingDuration | showPeriod}} </td>
+                        </tr>
+                        <tr>
+                            <th>Whitelist</th>
+                            <td>{{hasWhitelisting | YesNo}}</td>
+                        </tr>
+                        <tr>
+                            <th>Tier System </th>
+                            <td>{{enableTierSystem | YesNo}}</td>
+                        </tr>
+                        <tr *ngIf="enableTierSystem">
+                            <th>Balance</th>
+                            <td>{{fullDisBalance | number: '1.0-2'}} {{disSymbol}}</td>
+                        </tr>
+                        <tr *ngIf="vipTier && enableTierSystem" [ngClass]="{'selected': fullDisBalance>=vipTier.disAmount}">
+                            <th>VIP</th>
+                            <td>{{vipTier.disAmount}} {{disSymbol}} - {{vipTier.percent}} %</td>
+                        </tr>
+
+                        <tr *ngIf="holdersTier && enableTierSystem" [ngClass]="{'selected': fullDisBalance>=holdersTier.disAmount && fullDisBalance<vipTier.disAmount}">
+                            <th>Holders</th>
+                            <td>{{holdersTier.disAmount}} {{disSymbol}} - {{holdersTier.percent}} %</td>
+                        </tr>
+
+                        <tr *ngIf="publicTier && enableTierSystem" [ngClass]="{'selected': fullDisBalance>=publicTier.disAmount && fullDisBalance<holdersTier.disAmount}">
+                            <th>Public</th>
+                            <td>{{publicTier.disAmount}} {{disSymbol}} - {{publicTier.percent}} %</td>
+                        </tr>
+
+                        <!--<tr>
+                            <th>Min Swap Level</th>
+                            <td>????? ETH</td>
+                        </tr>-->
+                    </table>
+                </div>
+                <div id="yourAllocationTab" class="tab">
+                    <div class="additional-box">
+
+
+                        <table class="dis-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Unlock Date</th>
+                                    <th>Token Debt</th>
+                                    <th>{{chainSymbol}} Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td> <span *ngIf="startClaimTimestamp"> {{ startClaimTimestamp * 1000 | date:'dd MMM, yyyy H:mm a'}} </span> </td>
+                                    <td>{{tokenDebt| number: '1.0-4'}}</td>
+                                    <td>{{totalInvestedETH| number: '1.0-4'}} {{chainSymbol}}</td>
+                                </tr>
+                                <!--<tr *ngFor="let item of tokensDebt; index as i;">
+                                    <td>{{i+1}}</td>
+                                    <td> <span *ngIf="item.timestamp"> {{ item.timestamp * 1000 | date:'dd MMM, yyyy H:mm a'}} </span> </td>
+                                    <td>{{toNumberFromWeiReward(item.returnValues.tokenAmount)}}</td>
+                                    <td>{{toNumberFromWei(item.returnValues.ethAmount, 18)}} {{chainSymbol}}</td>
+                                </tr>-->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="additional-info" *ngIf="ownerAddress && account && ownerAddress.toLowerCase() == account.toLowerCase()">
+        <div class="additional-tabs tabs">
+            <ul class="tab-links clearfix">
+                <li class="active"><a href="#whiteList">WhiteList</a></li>
+                <li class=""><a href="#settings">Settings</a></li>
+            </ul>
+            <div class="tab-content">
+                <div id="whiteList" class="tab active">
+                    <div class="additional-box">
+                        <form #whitelistForm="ngForm" (ngSubmit)="updateWhiteListClick()">
+                            <div class="create-box mt-30">
+                                <h2 style="text-align: center">
+                                    Add White list addresses
+                                </h2>
+                                <ul class="form-list">
+                                    <li>
+                                        Addresses for add splitted by space
+                                        <textarea [(ngModel)]="addressesForAddWhiteList" name="addressesForAddWhiteList" class="form-control" required> </textarea>
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="approve-pool text-center">
+                                <button class="btn btn-blue" type="submit" [ngClass]="{'wait': waiting}" [disabled]="!whitelistForm.form.valid || waiting">Update</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div id="settings" class="tab">
+                    <div class="additional-box">
+                        <table class="dis-table">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Value</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        Withdraw funds
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <button class="btn btn-blue" type="button" (click)="withdrawFundsClick()" [ngClass]="{'wait': waiting}" [disabled]="waiting">Withdraw funds</button>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Withdraw not sold Tokens
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <button class="btn btn-blue" type="button" (click)="withdrawNotSoldTokensClick()" [ngClass]="{'wait': waiting}" [disabled]="waiting && !isFinished">withdraw not sold Tokens </button>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        Vesting percent:
+                                    </td>
+                                    <td>
+                                        {{vestingPercent}}
+                                    </td>
+                                    <td>
+
+                                        <input type="number" placeholder="new vestingPercent" [(ngModel)]="newVestingPercent" name="newVestingPercent" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Vesting start
+                                    </td>
+                                    <td>
+                                        {{vestingStart}} (    {{vestingStart* 1000 | date:'dd MMM, yyyy H:mm a'}})
+                                    </td>
+                                    <td>
+                                        <input type="number" placeholder="new vestingStart" [(ngModel)]="newVestingStart" name="newVestingStart" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Vesting interval
+                                    </td>
+                                    <td>
+                                        {{vestingInterval}}
+                                    </td>
+                                    <td>
+                                        <input type="number" placeholder="new vestingInterval" [(ngModel)]="newVestingInterval" name="newVestingInterval" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Vesting duration
+                                    </td>
+                                    <td>
+                                        {{vestingDuration}}
+                                    </td>
+                                    <td>
+                                        <input type="number" placeholder="new vestingDuration" [(ngModel)]="newVestingDuration" name="newVestingDuration" class="form-control" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        Vesting
+                                    </td>
+                                    <td></td>
+                                    <td>
+                                        <button class="btn btn-blue" type="button" (click)="updateVestingClick()" [ngClass]="{'wait': waiting}" [disabled]="waiting">Update Vesting</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+</main>
+
+<!--<main>
+    <div class="main-title text-center">
+        <h1>Buy {{rewardSymbol}} Token</h1>
+        <br />
+        <p *ngIf="now < startTimestamp">You can buy tokens from {{startTimestamp* 1000 | date:'dd MMM, yyyy H:mm a'}}</p>
+        <p *ngIf="now > startTimestamp && now < finishTimestamp">Token sales from {{startTimestamp* 1000 | date:'dd MMM, yyyy H:mm a'}} to {{finishTimestamp* 1000 | date:'dd MMM, yyyy H:mm a'}}!</p>
+        <p *ngIf="now > finishTimestamp">Token sales was finished!</p>
+    </div>
+
+    <div style="text-align:center; font-size: 33px; line-height:33px; padding: 30px 0;" *ngIf="isWeb3Disabled">
+        <a href="https://metamask.app.link/dapp/app.tosdis.finance/" target="_blank" style=" text-decoration:none">
+            <img src="/assets/images/mm-logo.svg" />
+            <br />
+            <br />
+            <span *ngIf="isMobile()">{{'Open in MetaMask App' | translate }}</span>
+            <span *ngIf="!isMobile()">{{'Install MetaMask for your browser' | translate }}</span>
+        </a>
+    </div>
+
+    <div class="alert alert-info text-center" *ngIf="now > finishTimestamp && now < startClaimTimestamp">
+        Tokens will be claimable on {{startClaimTimestamp* 1000 | date:'dd MMM, yyyy H:mm a'}}.
+    </div>
+
+    <div class="sale-tabs tabs">
+        <div class="tab-content">
+            <div id="tab1" class="tab sale-box active">
+                <div class="buy-form">
+                    <div *ngIf="now<finishTimestamp">
+                        <div class="buy-item mb-20">
+                            <div class="bi-top clearfix">
+                                <label class="left">From</label>
+                                <label class="right">Balance:<span>{{ethBalance | number: '1.2-2'}}</span></label>
+                            </div>
+                            <div class="bi-bottom">
+                                <input class="buy-input" type="number" [(ngModel)]="buyAmountETH" (ngModelChange)="calculateDis()" />
+                                <span class="eth-span" *ngIf="chainSymbol=='ETH'">{{chainSymbol}}</span>
+                                <span class="bnb-span" *ngIf="chainSymbol=='BNB'">{{chainSymbol}}</span>
+                            </div>
+                        </div>
+                        <div style="padding-bottom: 12px; font-weight:bold" *ngIf="buyAmountETH && buyAmountETH < minEthPayment">
+                            <div [ngClass]="{'text-danger': buyAmountETH < minEthPayment}">
+                                Min payment: {{minEthPayment | number: '1.0-8'}} {{chainSymbol}}
+                            </div>
+                        </div>
+                        <div style="padding-bottom: 12px; font-weight:bold" *ngIf="buyAmountETH && buyAmountETH > maxEthPayment">
+                            <div [ngClass]="{'text-danger': buyAmountETH > maxEthPayment}">
+                                Max payment: {{maxEthPayment | number: '1.0-8'}} {{chainSymbol}}
+                            </div>
+                        </div>
+                        <div class="buy-item mb-20">
+                            <div class="bi-top clearfix">
+                                <label class="left">{{rewardSymbol}} Amount</label>
+                                <label class="right">Balance:<span>{{tokenDebt | number: '1.2-2'}}</span></label>
+                            </div>
+                            <div class="bi-bottom">
+                                <input class="buy-input" [(ngModel)]="buyAmountDIS" (ngModelChange)="calculateETH()" />
+                                <span class="dis-span">{{rewardSymbol}}</span>
+                            </div>
+                        </div>
+                        <div class="price-ticker clearfix">
+                            <label>Price:</label>
+                            <h5>{{tokenPrice | number: '1.0-8'}} {{chainSymbol}} per {{rewardSymbol}}</h5>
+                        </div>
+                        <div class="buy-btn">
+                            <button class="btn btn-blue full" (click)="unlockWalletClick()" *ngIf="!account">Connect Wallet</button>
+                            <button class="btn btn-blue full" *ngIf="account"
+                                    (click)="payClick()"
+                                    [ngClass]="{'wait': waitingTimerId[0]}"
+                                    [disabled]="!buyAmountETH || waitingTimerId[0] || buyAmountETH > maxEthPayment || buyAmountETH < minEthPayment || !allowPay">
+                                {{'Pay'|translate}}
+                            </button>
+                        </div>
+                    </div>
+                    <div *ngIf="now > finishTimestamp">
+                        <div class="buy-item mb-20 mt-30">
+                            <div class="bi-top clearfix">
+                                <label class="left">{{rewardSymbol}} Amount for claim</label>
+                            </div>
+                            <div class="bi-bottom">
+                                <input class="buy-input" disabled="disabled" [(ngModel)]="tokenDebt" style="background-color: inherit" />
+                                <span class="dis-span">{{rewardSymbol}}</span>
+                            </div>
+                        </div>
+
+                        <div class="buy-item mb-20 mt-30" *ngIf="myClaimedTokensAmount">
+                            <div class="bi-top clearfix">
+                                <label class="left">Claimed {{rewardSymbol}} Amount</label>
+                            </div>
+                            <div class="bi-bottom">
+                                <input class="buy-input" disabled="disabled" [(ngModel)]="myClaimedTokensAmount" style="background-color: #fff;" />
+                                <span class="dis-span">{{rewardSymbol}}</span>
+                            </div>
+                        </div>
+                        <div class="buy-btn">
+                            <button class="btn btn-blue full" (click)="unlockWalletClick()" *ngIf="!account">Connect Wallet</button>
+                            <button class="btn btn-blue full" *ngIf="tokenDebt && account" style="margin-top: 20px"
+                                    (click)="claimClick()"
+                                    [ngClass]="{'wait': waitingTimerId[1]}"
+                                    [disabled]="waitingTimerId[1] || !allowClaim">
+                                {{'Claim your purchased tokens'|translate}}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="progress-system" style="padding-top: 50px; margin: 0;">
+                        <h5>Progress</h5>
+                        <div class="token-claimed">
+                            <span [style.width.%]="getDistributedPercent"></span>
+                        </div>
+                        <div class="claim-detail clearfix">
+                            <h4>{{getDistributedPercent| number: '1.0-2'}}%</h4>
+                            <h6>{{tokensForDistribution| number: '1.0-2'}}/{{maxDistributedTokenAmount | number: '1.0-2'}}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="sub-box mt-30">
+        <div class="row">
+            <div class="col-lg-10" style="margin: 0 auto;">
+                <div class="dis-box">
+                    <h3 class="sub_title text-center">Your Allocation</h3>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Date</th>
+                                <th>Token Allocation</th>
+                                <th>{{chainSymbol}} Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let item of tokensDebt; index as i;">
+                                <td>{{i+1}}</td>
+                                <td>
+                                    <span *ngIf="item.timestamp"> {{ item.timestamp * 1000 | date:'dd MMM, yyyy H:mm a'}} </span>
+                                </td>
+                                <td>{{toNumberFromWeiReward(item.returnValues.tokenAmount)}}</td>
+                                <td>{{toNumberFromWei(item.returnValues.ethAmount, 18)}} {{chainSymbol}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>-->

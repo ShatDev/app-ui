@@ -1,0 +1,150 @@
+﻿<div class="staking-pool clearfix">
+    <div class="ribbon" *ngIf="isFinished"><span>Finished</span></div>
+    <div class="ribbon" *ngIf="isActive"><span>Active</span></div>
+    <div class="st-pool-inner">
+        <div class="stake-title">
+            <img [src]="imagePath" height="60" />
+            <h3>
+                {{pool.poolTokenSymbol}} Pool
+                <span *ngIf="pool.poolAddress =='0xaaaa14624043d4afc716747af62e8027df31b21d' || pool.poolAddress =='0x1159eb1062e597093ed7cb72da9f4f0f57eab75d'">v2</span>
+            </h3>
+        </div>
+        <div class="pool-earning">
+            <h2 [title]="pendingReward">{{pendingReward| number: '1.0-4'}}</h2>
+            <h4>{{pool.poolTokenSymbol}} Earned</h4>
+        </div>
+        <div style="clear:both"></div>
+        <div class="yield-box clone">
+            <table>
+                <tr *ngIf="apy">
+                    <th>APY</th>
+                    <td>{{apy| number: '1.0-2'}}%</td>
+                </tr>
+                <tr *ngIf="isBlockPool">
+                    <th>Reward per block</th>
+                    <td>{{rewardPerBlock| number: '1.0-4'}} {{pool.poolTokenSymbol}}</td>
+                </tr>
+                <tr *ngIf="!isBlockPool">
+                    <th>Reward per minute</th>
+                    <td>{{rewardPerBlock * 60| number: '1.0-4'}} {{pool.poolTokenSymbol}}</td>
+                </tr>
+                <tr *ngIf="isBlockPool">
+                    <th>Start block</th>
+                    <td>{{startBlock}}</td>
+                </tr>
+                <tr *ngIf="isBlockPool">
+                    <th>Finish block</th>
+                    <td>{{finishBlock}}</td>
+                </tr>
+
+                <tr *ngIf="!isBlockPool">
+                    <th>Start</th>
+                    <td>{{startBlock* 1000 | date:'dd MMM, yyyy H:mm a'}}</td>
+                </tr>
+                <tr *ngIf="!isBlockPool">
+                    <th>Finish</th>
+                    <td>{{finishBlock* 1000 | date:'dd MMM, yyyy H:mm a'}}</td>
+                </tr>
+                <tr>
+                    <th>Your Stake</th>
+                    <td>{{stakedAmount| number: '1.0-4'}}  {{pool.stakingTokenSymbol}}</td>
+                </tr>
+                <tr>
+                    <th>Pool share</th>
+                    <td>{{getStakedPercent| number: '1.0-4'}}%</td>
+                </tr>
+                <tr>
+                    <th>Participants</th>
+                    <td>{{participants}}</td>
+                </tr>
+            </table>
+
+            <div class="farming-deposit" *ngIf="isLP&&addLiquidityURL">
+                <a [href]="addLiquidityURL" class="btn btn-border full" target="_blank">Deposit {{uniFullSymbols}}</a>
+            </div>
+
+            <!--<div></div>
+            <a *ngIf="isLP&&addLiquidityURL" [href]="addLiquidityURL" target="_blank" class="btn btn-blue" style="margin:10px;">Deposit {{uniFullSymbols}} <i class="fas fa-university"></i></a>-->
+        </div>
+        <div class="progress-system">
+            <h5>Distributed tokens</h5>
+            <div class="token-claimed">
+                <span [style.width.%]="getDistributedPercent"></span>
+            </div>
+            <div class="claim-detail clearfix">
+                <h4>{{getDistributedPercent| number: '1.0-2'}}%</h4>
+                <h6>{{allPaidReward| number: '1.0-2'}}/{{poolTokenAmount | number: '1.0-2'}}</h6>
+            </div>
+        </div>
+        <div class="approve-btn" *ngIf="account">
+            <button [ngClass]="{'wait': saving}" [disabled]="saving" class="btn btn-blue full" (click)="approvePoolClick()" *ngIf="!isApproved&&!isFinished">
+                {{'Approve' | translate}}
+            </button>
+        </div>
+        <div class="approve-btn two-btn clearfix" *ngIf="isApproved&&!isFinished || stakedAmount">
+            <button class="btn btn-blue stake-btn" (click)="toggleStake()" [disabled]="isFinished" 
+                    *ngIf="pool.poolAddress !='0xba4753cc5541d96c721643caa06dba6eff4ab4fe'&&pool.poolAddress !='0x4eac69e732f715f2f28fb0edd9151bc5e7409dc2'">Stake </button>
+            <button class="btn btn-blue unstake-btn" (click)="toggleUnStake()">Unstake</button>
+        </div>
+        <button class="btn btn-blue unstake-btn" style="margin-top: 15px" [ngClass]="{'wait': saving}" [disabled]="saving" (click)="withdrawPoolRemainderClick()"
+                *ngIf="owner && account&& owner.toLowerCase()===account.toLowerCase() && isFinished">
+            {{'Withdraw Pool Remainder' | translate}}
+        </button>
+        <div class="harvest-button">
+            <button [ngClass]="{'wait': saving}" [disabled]="saving" (click)="harvestClick()" *ngIf="pendingReward">
+                {{'Harvest' | translate}}
+            </button>
+
+            <button [ngClass]="{'wait': saving}" style="margin-left: 5px;" [disabled]="saving" (click)="reinvestClick()" *ngIf="pendingReward&&pool.poolToken==pool.stakingToken&&!isFinished">
+                {{'Reinvest' | translate}}
+            </button>
+        </div>
+        <!--<div class="text-center" style="clear:both">
+            <span class="status verified" *ngIf="verified">Verified</span>
+            <span class="status unverified" *ngIf="!verified">unverified</span>
+        </div>-->
+        <div id="unstake-wrap" class="unstake-wrap" *ngIf="showUnstake">
+            <form #unstakeForm="ngForm" (ngSubmit)="withdrawStakeClick()">
+                <ul class="form-list">
+                    <li>
+                        <div class="input-box">
+                            <input type="number" min="0" placeholder="Enter Unstake Amount" [(ngModel)]="amountForWithdrawStake" name="amountForWithdrawStake" class="form-control" required autocomplete="off" />
+                            <div class="max-button-placeholder">
+                                <button type="button" class="btn-max-balance" (click)="setMaxUnStake()">Max</button>
+                            </div>
+                            <!--<input type="text" class="form-control" placeholder="Enter Unstake Amount" />-->
+                        </div>
+                    </li>
+                    <li class="approve-btn two-btn clearfix">
+                        <!--<button class="btn btn-blue">Unstake</button>-->
+                        <button class="btn btn-blue" type="submit" [ngClass]="{'wait': saving}" [disabled]="!unstakeForm.form.valid || saving"> {{'Unstake' | translate}}</button>
+                        <button class="btn btn-blue cancel-btn" type="button" (click)="toggleUnStake()">Cancel</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+        <div id="stake-wrap" class="unstake-wrap" *ngIf="showStake">
+            <form #stakeForm="ngForm" (ngSubmit)="stakeClick()">
+                <ul class="form-list">
+                    <li>
+                        Balance: {{stakedTokenBalance| number: '1.0-4'}}  {{pool.stakingTokenSymbol}}
+                    </li>
+                    <li>
+                        <div class="input-box">
+                            <!--<input type="text" class="form-control" placeholder="Enter stake Amount" />-->
+                            <input type="number" min="0" placeholder="Enter stake Amount" [(ngModel)]="amountForStake" name="amountForStake" class="form-control" required autocomplete="off" />
+                            <div class="max-button-placeholder">
+                                <button type="button" class="btn-max-balance" (click)="setMaxStake()">Max</button>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="approve-btn two-btn clearfix">
+                        <!--<button class="btn btn-blue">stake</button>-->
+                        <button class="btn btn-blue" type="submit" [ngClass]="{'wait': saving}" [disabled]="!stakeForm.form.valid || saving || isFinished"> {{'Stake' | translate}}</button>
+                        <button class="btn btn-blue cancel-btn" type="button" (click)="toggleStake()">Cancel</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,233 @@
+
+/*#region custom*/
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+    -moz-appearance: textfield;
+}
+
+
+.wait {
+    cursor: wait !important;
+}
+
+.view_etherscan {
+    color: #4DCEED;
+    font-weight: bold;
+}
+
+.dropdown-menu.show {
+    width: 100%;
+}
+
+.max-button-placeholder {
+    position: absolute;
+    top: 12px;
+    right: 7px;
+}
+
+.btn-max-balance {
+    border: none;
+    position: relative;
+    display: inline-block;
+    line-height: 24px;
+    font-size: 16px;
+    padding: 2px 10px 0 10px;
+    border-radius: 3px;
+    background-color: #4DCEED;
+    font-family: 'Teko';
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    transition: 0.3s all;
+    -webkit-transition: 0.3s all;
+    -moz-transition: 0.3s all;
+}
+
+.form-control:disabled, .form-control[readonly] {
+    background-color: none;
+    opacity: 1;
+}
+
+body.dark .form-control {
+    background-color: inherit !important;
+}
+
+/*#endregion custom*/
+
+
+body.dark .swal2-modal {
+    background-color: #080918;
+}
+
+body.dark .swal2-content {
+    color: #fff;
+}
+
+body.dark .modal-content {
+    background-color: #080918;
+}
+
+    body.dark .modal-content .close {
+        color: #fff;
+        opacity: 0.8;
+    }
+
+
+/*#region IDO*/
+/*body.dark .yield-box.clone tr {
+    background: rgba(0,0,0,0.3);
+    border-bottom-color: transparent;
+}
+
+body.dark .hide_cancelled {
+    background: rgba(255,255,255,0.1);
+}
+
+body.dark .sale-box {
+    background-color: #0f1121;
+}
+
+body.dark .buy-input {
+    background-color: transparent;
+    color: #fff;
+}
+
+body.dark .buy-item {
+    border-color: rgba(255,255,255,0.1);
+}
+
+
+body.dark .dis-box {
+    background-color: #0f1121;
+}
+
+    body.dark .dis-box table tbody tr:nth-child(even) {
+        background-color: inherit;
+    }
+
+
+
+body.dark .dis-span {
+    background: rgba(255,255,255,0.2) url(../images/nologo.svg) no-repeat 10px 50%;
+    background-size: 24px auto;
+}
+
+body.dark .eth-span {
+    background: rgba(255,255,255,0.2) url(../images/eth.png) no-repeat 10px 50%;
+    background-size: 24px auto;
+}
+
+body.dark .bnb-span {
+    background: rgba(255,255,255,0.2) url(../images/bnb.png) no-repeat 10px 50%;
+    background-size: 24px auto;
+}*/
+/*#endregion IDO*/
+.loadingData {
+    z-index: 10000 !important;
+    cursor: wait !important;
+}
+
+
+.wallet-placeholder {
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+}
+
+
+.wallet-item {
+    -webkit-box-align: center;
+    align-items: center;
+    border: 0px;
+    border-radius: 16px;
+    cursor: pointer;
+    display: inline-flex;
+    font-family: inherit;
+    font-size: 16px;
+    font-weight: 600;
+    -webkit-box-pack: center;
+    justify-content: center;
+    letter-spacing: 0.03em;
+    line-height: 1;
+    opacity: 1;
+    outline: 0px;
+    /* transition: background-color 0.2s ease 0s;*/
+    height: 48px;
+    padding: 0px 24px;
+    /*   background-color: rgb(53, 53, 71);*/
+    box-shadow: none;
+    /*    color: rgb(31, 199, 212);*/
+    width: 100%;
+    margin-bottom: 8px;
+}
+
+
+.wallet-item-text {
+    /*    color: rgb(31, 199, 212);*/
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-right: 16px;
+}
+
+.wallet-item svg {
+    /*  fill: rgb(234, 226, 252);*/
+    flex-shrink: 0;
+}
+
+
+.gHUUHu:hover {
+    text-decoration: underline;
+}
+
+.jVcdkP {
+    /* fill: rgb(31, 199, 212);*/
+    flex-shrink: 0;
+    margin-right: 6px;
+}
+
+.bYYIwB {
+    display: flex;
+    align-self: center;
+    -webkit-box-align: center;
+    align-items: center;
+    margin-top: 24px;
+}
+
+.UlHUk {
+    /* color: rgb(31, 199, 212);*/
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+
+
+body.dark .wallet-item {
+    background-color: #0f1121;
+    color: #fff;
+}
+
+
+body.dark .additional-box a {
+    color: #fff !important;
+}
+
+
+#poolInfoTab tr.selected, #poolInfoTab tr.selected th {
+    background-color: #4DCEED;
+    color: #000 !important;
+}
+
+.img-responsive {
+    display: block;
+    max-width: 100%;
+    height: auto;
+}

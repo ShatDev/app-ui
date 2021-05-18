@@ -1,0 +1,214 @@
+﻿<header-strip></header-strip>
+
+<main>
+    <div style="text-align:center; font-size: 33px; line-height:33px; padding: 30px 0;" *ngIf="isWeb3Disabled">
+        <a href="https://metamask.app.link/dapp/app.tosdis.finance/" target="_blank" style=" text-decoration:none">
+            <img src="/assets/images/mm-logo.svg" />
+            <br />
+            <br />
+            <span *ngIf="isMobile()">{{'Open in MetaMask App' | translate }}</span>
+            <span *ngIf="!isMobile()">{{'Install MetaMask for your browser' | translate }}</span>
+        </a>
+    </div>
+    <div class="main-title">
+        <h1 *ngIf="isETHChain">Bridge between ETH - BSC</h1>
+        <h1 *ngIf="isBNBChain">Bridge between BSC - ETH</h1>
+    </div>
+    <div class="create-pool">
+        <div class="row">
+            <div class="col-lg-8" style="margin: 0 auto;">
+                <form #transferForm="ngForm" (ngSubmit)="toStep2()">
+                    <div class="additional-tabs">
+                        <ul class="tab-links clearfix" style="margin-bottom: 0">
+                            <li [ngClass]="{'active': isTransitDis}"><a href="javascript:void(0);" (click)="selectTransitDis()">Transit DIS</a></li>
+                            <li [ngClass]="{'active': !isTransitDis}"><a href="javascript:void(0);" (click)="selectTransitOtherToken()">Transit other tokens</a></li>
+                        </ul>
+                    </div>
+                    <div class="create-box mt-30">
+                        <h2 style="text-align: center" *ngIf="step==2">
+                            Confirm your transfer
+                        </h2>
+                        <ul class="form-list">
+                            <li>
+                                Token <b> {{tokenSymbol}}</b>
+                                <input type="text" placeholder="Address of Token" [(ngModel)]="tokenAddress" name="tokenAddress" class="form-control" required [disabled]="step>1 || isTransitDis" autocomplete="off" />
+                            </li>
+                            <li>
+                                Amount
+                                <input type="number" placeholder="Amount of tokens for transfer" [(ngModel)]="transferAmount" name="transferAmount" class="form-control" required [disabled]="step>1" />
+                            </li>
+                            <li *ngIf="step==2">
+                                Balance: {{balanceAmount | number: '1.0-4'}}
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="approve-pool text-center" *ngIf="step==1">
+                        <button class="btn btn-blue" type="submit" [ngClass]="{'wait': waiting}" [disabled]="!transferForm.form.valid || waiting || !account">
+                            Transfer
+                        </button>
+                    </div>
+                </form>
+                <div *ngIf="step==2">
+                    <div class="approve-pool text-center" *ngIf="!isApprovedTransferToken">
+                        <button type="button" class="btn btn-blue" style="float:left" [ngClass]="{'wait': waiting}" (click)="toStep1()" [disabled]="waiting">
+                            Back
+                        </button>
+                        <button type="button" class="btn btn-blue" [ngClass]="{'wait': waiting}" (click)="approveTransferTokenClick()" [disabled]="waiting">
+                            Approve {{tokenSymbol}}
+                        </button>
+                    </div>
+                    <div class="approve-pool text-center" *ngIf="isApprovedTransferToken">
+                        <button type="button" class="btn btn-blue" style="float:left" [ngClass]="{'wait': waiting}" (click)="toStep1()" [disabled]="waiting">
+                            Back
+                        </button>
+                        <button type="button" class="btn btn-blue" [ngClass]="{'wait': waiting}" (click)="createTransitForBSCClick()" [disabled]="waiting" *ngIf="isETHChain">
+                            Confirm transfer to BSC
+                        </button>
+                        <button type="button" class="btn btn-blue" [ngClass]="{'wait': waiting}" (click)="createPaybackTransitClick()" [disabled]="waiting" *ngIf="isBNBChain">
+                            Confirm transfer to ETH
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="additional-info">
+        <div class="additional-tabs tabs">
+            <ul class="tab-links clearfix" style="margin-bottom: 0">
+                <li [ngClass]="{'active': isBNBChain}"><a href="#tab1">Transit to BSC</a></li>
+                <li [ngClass]="{'active': isETHChain}"><a href="#tab2">Payback to ETH</a></li>
+            </ul>
+            <span (click)="refreshDB()" style="float:right; cursor: pointer" title="Refresh" [ngClass]="{'wait': refreshData}">
+                <i class="fas fa-sync-alt"></i>
+            </span>
+            <div class="tab-content">
+                <div id="tab1" class="tab" [ngClass]="{'active': isBNBChain}">
+                    <div class="additional-box">
+                        <table class="dis-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tx</th>
+                                    <th>From ETH</th>
+                                    <th>To BSC</th>
+                                    
+                                    <th>Amount</th>
+                                    <th>Confirmed</th>
+                                    <th>Signed</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of transitEvents; index as i;">
+                                    <td>{{transitEvents.length - i}}</td>
+                                    <td><a [href]="'https://etherscan.io/tx/' + item.transactionHash" target="_blank">{{item.transactionHash | shortAddress}}</a></td>
+                                    <td><a [href]="'https://etherscan.io/token/' + item.token" target="_blank"> {{item.token | shortAddress}} {{item.tokenSymbol}}</a></td>
+                                    <td><a [href]="'https://bscscan.com/token/' + item.bscToken" target="_blank" *ngIf="item.bscToken"> {{item.bscToken | shortAddress}} {{item.signedTokenSymbol}}</a></td>
+                                    <td>{{item.amount | shiftDecimals:-item.tokenDecimals}}</td>
+                                    <td><span *ngIf="!item.isConfirmed">{{item.confirmationCount}}/12</span> {{item.isConfirmed | YesNo}}</td>
+                                    <td>{{item.signature| YesNo}}</td>
+                                    <td>
+                                        <span *ngIf="item.isWithdraw">
+                                            Received
+                                        </span>
+                                        <div *ngIf="item.signature && !item.isWithdraw">
+                                            <button type="button" class="btn btn-blue" [ngClass]="{'wait': waiting}"
+                                                    (click)="withdrawTransitTokenClick(item)" [disabled]="waiting" *ngIf="isBNBChain">
+                                                Receive
+                                            </button>
+                                            <button type="button" class="btn btn-blue" *ngIf="!isBNBChain" (click)="selectBSCChainClick()">
+                                                Select BSC network to claim
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div id="tab2" class="tab" [ngClass]="{'active': isETHChain}">
+                    <div class="additional-box">
+                        <table class="dis-table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Tx</th>
+                                    <th>From BSC</th>
+                                    <th>To ETH</th>
+                                    <th>Amount</th>
+                                    <th>Confirmed</th>
+                                    <th>Signed</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let item of paybackEvents; index as i;">
+                                    <td>{{paybackEvents.length - i}}</td>
+                                    <td><a [href]="'https://bscscan.com/tx/' + item.transactionHash" target="_blank">{{item.transactionHash | shortAddress}}</a></td>
+                                    <td><a [href]="'https://bscscan.com/token/' + item.bscToken" target="_blank"> {{item.bscToken | shortAddress}} {{item.bscTokenSymbol}}</a></td>
+                                    <td><a [href]="'https://etherscan.io/token/' + item.token" target="_blank"> {{item.token | shortAddress}} {{item.tokenSymbol}}</a></td>
+                                    <td>{{item.amount | shiftDecimals:-item.tokenDecimals}}</td>
+                                    <td><span *ngIf="!item.isConfirmed">{{item.confirmationCount}}/12</span>   {{item.isConfirmed | YesNo}}</td>
+                                    <td>{{item.signature | YesNo}}</td>
+                                    <td>
+                                        <span *ngIf="item.isWithdraw">
+                                            Received
+                                        </span>
+                                        <div *ngIf="item.signature && !item.isWithdraw">
+                                            <button type="button" class="btn btn-blue" [ngClass]="{'wait': waiting}"
+                                                    (click)="withdrawFromBSCClick(item)" [disabled]="waiting" *ngIf="isETHChain">
+                                                Receive
+                                            </button>
+                                            <button type="button" class="btn btn-blue" *ngIf="!isETHChain" (click)="selectETHChainClick()">
+                                                Select Ethereum network to claim
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--<div>
+        <div *ngFor="let item of paybackEvents">
+            {{item.transactionHash}}
+            {{item.blockNumber}}
+            {{item.from}}
+            {{item.token}}
+            {{item.amount}}
+            {{item.isConfirmed}}
+            {{item.signature}}
+
+            <button type="button" class="btn btn-blue" [ngClass]="{'wait': waiting}" (click)="withdrawFromBSCClick(item)" [disabled]="waiting" *ngIf="isETHChain">
+                Withdraw
+            </button>
+        </div>
+    </div>
+
+    <div>
+        <div *ngFor="let item of transitEvents">
+            {{item.transactionHash}}
+            {{item.blockNumber}}
+            {{item.from}}
+            {{item.token}}
+            {{item.amount}}
+            {{item.tokenDecimals}}
+            {{item.tokenName}}
+            {{item.tokenSymbol}}
+            {{item.isConfirmed}}
+            {{item.signature}}
+
+            <button type="button" class="btn btn-blue" [ngClass]="{'wait': waiting}" (click)="withdrawTransitTokenClick(item)" [disabled]="waiting" *ngIf="isBNBChain">
+                Withdraw
+            </button>
+
+        </div>
+    </div>-->
+</main>

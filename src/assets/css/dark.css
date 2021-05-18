@@ -1,0 +1,202 @@
+body.dark {
+	background-color: #080918;
+	color: #fff;
+}
+
+	body.dark .btn-border {
+		border-color: rgba(255,255,255,0.3);
+		color: #fff;
+	}
+
+		body.dark .btn-border:hover {
+			border-color: #4DCEED;
+		}
+
+	body.dark main .theme-bg {
+		opacity: 0.07;
+	}
+
+		body.dark main .theme-bg.bnb {
+			opacity: 0.05;
+			color: #f3ba2f;
+		}
+
+	body.dark .menu-toggle svg {
+		fill: #fff;
+	}
+
+	body.dark .staking-pool {
+		/*background-color:#0f1121;*/
+		background: -moz-linear-gradient(-45deg, rgba(138,146,178,0.3) 0%, rgba(15,17,33,0.7) 30%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(-45deg, rgba(138,146,178,0.3) 0%,rgba(15,17,33,0.7) 30%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(135deg, rgba(138,146,178,0.3) 0%,rgba(15,17,33,0.7) 30%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+		filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#4d8a92b2', endColorstr='#b30f1121',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+	}
+
+	body.dark .bsc .staking-pool {
+		background: -moz-linear-gradient(-45deg, rgba(243,186,47,0.2) 0%, rgba(15,17,33,0.7) 30%); /* FF3.6-15 */
+		background: -webkit-linear-gradient(-45deg, rgba(243,186,47,0.2) 0%,rgba(15,17,33,0.7) 30%); /* Chrome10-25,Safari5.1-6 */
+		background: linear-gradient(135deg, rgba(243,186,47,0.2) 0%,rgba(15,17,33,0.7) 30%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+	}
+
+	body.dark .apy {
+		background-color: rgba(0,0,0,0.20);
+	}
+
+	body.dark .pool-earning h4 {
+		color: rgba(255,255,255,0.5);
+	}
+
+	body.dark .left-bar {
+		background-color: #080918
+	}
+
+	body.dark .staking-menu > li > a {
+		background-color: #0f1121;
+		color: rgba(255,255,255,0.70);
+	}
+
+		body.dark .staking-menu > li > a:hover {
+			background-color: #4DCEED;
+			color: #fff;
+		}
+
+		body.dark .staking-menu > li > a svg {
+			fill: rgba(255,255,255,0.70);
+		}
+
+		body.dark .staking-menu > li > a:hover svg {
+			fill: #fff;
+		}
+
+	body.dark .staking-logo .fil3, body.dark .staking-logo .fil0 {
+		fill: #fff;
+	}
+
+	body.dark .staking-login a {
+		background-color: #0f1121;
+		color: #fff;
+	}
+
+		body.dark .staking-login a:hover {
+			background-color: rgba(255,255,255,0.05);
+			color: #fff;
+		}
+
+	body.dark .last-wave {
+		fill: #080918;
+	}
+
+	body.dark .create-box {
+		background-color: #0f1121;
+	}
+
+	body.dark .approve-pool {
+		border-color: rgba(255,255,255,0.25);
+	}
+
+	body.dark .theme-mode {
+		background-color: #0f1121;
+	}
+
+	body.dark .t-b svg {
+		fill: rgba(255,255,255,0.5);
+	}
+
+	body.dark .t-b input:checked + label svg {
+		fill: #181927;
+	}
+
+	body.dark .fee-box {
+		background-color: #0f1121;
+		color: #fff;
+	}
+
+	body.dark .form-control {
+		border-color: rgba(255,255,255,0.1);
+		color: #fff;
+	}
+
+		body.dark .form-control:focus {
+			border-color: rgba(255,255,255,0.4);
+		}
+
+	body.dark .fee-box h3 {
+		border-color: rgba(255,255,255,0.25);
+	}
+
+	body.dark .tab-links {
+		background-color: #0f1121;
+	}
+
+		body.dark .tab-links > li a {
+			color: #fff;
+		}
+
+		body.dark .tab-links > li.active a {
+			color: #181927;
+		}
+
+	body.dark .guide .tab {
+		background-color: #0f1121;
+	}
+
+	body.dark .panel-default {
+		border-color: rgba(255,255,255,0.15);
+	}
+
+	body.dark .panel {
+		background-color: rgba(0,0,0,0.30);
+	}
+
+	body.dark .panel-default > .panel-heading {
+		background-color: rgba(255,255,255,0.1);
+		border: none;
+	}
+
+	body.dark .panel-title a, body.dark .panel-title a:active, body.dark .panel-title a:focus, body.dark .panel-title a:hover {
+		color: #fff;
+	}
+
+	body.dark .panel-group .panel-heading + .panel-collapse > .panel-body,
+	body.dark .panel-group .panel-heading + .panel-collapse > .list-group {
+		border: none;
+	}
+
+	body.dark .social_header ul li a {
+		color: rgba(255,255,255,0.65);
+	}
+
+		body.dark .social_header ul li a:hover {
+			color: #fff;
+		}
+
+	body.dark .hide_cancelled {
+		background: rgba(255,255,255,0.1);
+	}
+
+	body.dark .pool-filters {
+		background-color: #0f1121;
+	}
+
+	body.dark .ido-box {
+		background-color: #0f1121;
+	}
+
+	body.dark .additional-info,
+	body.dark .additional-tabs .tab-links,
+	body.dark .contract-address {
+		background-color: #0f1121;
+	}
+
+	body.dark .dis-table tbody tr:nth-child(even) {
+		background-color: rgba(255,255,255,0.05);
+	}
+
+	body.dark .pool-table {
+		border-color: rgba(255,255,255,0.1);
+	}
+
+		body.dark .pool-table tr {
+			border-color: rgba(255,255,255,0.1);
+		}

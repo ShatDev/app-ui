@@ -1,0 +1,112 @@
+@media (min-width: 1600px){
+   .adding-steps-ul li{
+	   font-size:20px;
+	   line-height:30px;
+	   padding-left:25px;
+	   margin-bottom:10px;
+   }
+   .adding-steps-ul li b{
+	   line-height:30px;
+   }
+}
+@media (max-width: 1199px){
+   
+}
+@media (max-width: 1199px) and (min-width: 992px){
+   
+}
+@media (max-width: 991px){
+	.sale-box, .tab-links{
+		width:auto;
+	}
+	main{
+		margin-left:260px;
+	}
+	.banner-bg{
+		display:none;
+	}
+	.main-title.clearfix > p{
+		margin:0;
+		padding-left:0;
+		border:none;
+		font-size:14px;
+	}
+	.search-box{
+		margin-top:15px;
+		padding:0;
+	}
+	.pool-filters{
+		 margin-top:20px;
+	}
+	.main-title h1.with-logo{
+		float:none;
+		margin-bottom:10px;
+	}
+	.ido-box{
+		margin-bottom:20px;
+	}
+	.contract-address span{
+		font-size:12px;
+	}
+	.additional-box{
+		overflow-x:auto;
+	}
+}
+@media (max-width: 991px) and (min-width: 768px){
+
+}
+@media (max-width: 767px){
+	.banner-bg{
+		display:none;
+	}
+	.left-bar{
+		position:relative;
+		top:0;
+		left:0;
+		width:auto;
+		padding:15px;
+	}
+	.social_header{
+		display:none;
+	}
+	.menu-toggle {
+      position:absolute;
+	  right:15px;
+	  top:15px;
+	  display:block;
+    }
+	.staking-logo, .staking-menu{
+		margin-bottom:15px;
+	}
+	.staking-menu{
+		display:none;
+	}
+	main{
+		margin:0;
+		padding:20px 15px;
+	}
+	.guide-tab{
+		padding:15px;
+	}
+	.main-title{
+		margin-bottom:15px;
+	}
+	.main-title h1{
+		font-size:24px;
+	}
+	.main-title p{
+		font-size:14px;
+		line-height:22px;
+	}
+	.sale-box{
+		padding:15px;
+	}
+}
+@media (max-width: 479px){
+    .buy-input{
+		font-size:20px;
+	}
+}
+@media (max-width: 320px){
+
+}

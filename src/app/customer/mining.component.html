@@ -1,0 +1,67 @@
+﻿<header-strip></header-strip>
+
+<main>
+    <div class="theme-bg" [ngClass]="{'loadingData': loadingData, 'bnb': isBNBChain}">
+        <i class="cf cf-eth" *ngIf="!isBNBChain"></i>
+        <i class="cf cf-bnb" *ngIf="isBNBChain"></i>
+    </div>
+    <div style="text-align:center; font-size: 33px; line-height:33px; padding: 30px 0;" *ngIf="isWeb3Disabled">
+        <a href="https://metamask.app.link/dapp/app.tosdis.finance/" target="_blank" style=" text-decoration:none">
+            <img src="/assets/images/mm-logo.svg" />
+            <br />
+            <br />
+            <span *ngIf="isMobile()">{{'Open in MetaMask App' | translate }}</span>
+            <span *ngIf="!isMobile()">{{'Install MetaMask for your browser' | translate }}</span>
+        </a>
+    </div>
+    <div class="main-title clearfix">
+        <h1>FARMING</h1>
+        <div style="clear:both"></div>
+        <div class="search-box row">
+            <div class="col-lg-7">
+                <div class="input-box">
+                    <i class="fas fa-search"></i>
+                    <!--<input type="text" placeholder="Search Pools" class="form-control" />-->
+                    <input id="typeahead-prevent-manual-entry" type="text" class="form-control"
+                           placeholder="Search Pools"
+                           [(ngModel)]="selected"
+                           (ngModelChange)="selectedChanged($event)"
+                           [ngbTypeahead]="search"
+                           [inputFormatter]="formatter"
+                           [resultFormatter]="formatter"
+                           [editable]='false' />
+                </div>
+            </div>
+            <div class="col-lg-5">
+                <ul class="pool-filters clearfix">
+                    <li>
+                        <input type="radio" name="pool-filter" id="public-pools" value="public" [(ngModel)]="tabType" (ngModelChange)="updatePools()" />
+                        <label for="public-pools">Public Pools</label>
+                    </li>
+                    <li>
+                        <input type="radio" name="pool-filter" id="verified-pools" value="verified" [(ngModel)]="tabType" (ngModelChange)="updatePools()" />
+                        <label for="verified-pools">Verified Pools</label>
+                    </li>
+                    <li>
+                        <input type="radio" name="pool-filter" id="closed-pools" value="finished" [(ngModel)]="tabType" (ngModelChange)="updatePools()" />
+                        <label for="closed-pools">Closed Pools</label>
+                    </li>
+                </ul>
+            </div>
+            <!--<div class="col-lg-3">
+                <div class="cancelled-orders">
+                    <h3>Show unverified Pools:</h3>
+                    <input type="checkbox" [(ngModel)]="showUnverifiedPools" (ngModelChange)="updatePoolsClick()" style="display:none" id="hide_cancelled">
+                    <label for="hide_cancelled" class="hide_cancelled"><b></b></label>
+                </div>
+            </div>-->
+        </div>
+    </div>
+    <!--start staking pools-->
+    <ul class="staking-pools row"  [ngClass]="{'bsc': isBNBChain}">
+        <li class="col-lg-4" *ngFor="let pool of allowedPools">
+            <pool-view [pool]="pool" [allowedAddresses]="allowedAddresses" [poolsConfig]="poolsConfig" [isLP]="true"></pool-view>
+        </li>
+    </ul>
+    <!--end staking pools-->
+</main>
